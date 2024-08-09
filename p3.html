@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(45deg, #0a0a0a, #3a4452);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #717377;
+            background-color: transparent;
+            border-radius: 6px;
+            box-shadow: 0px 3px 15px rgba(113, 115, 119, 0.5);
+        }
+
+        #txt {
+            width: 100%;
+            text-align: right;
+            height: 40px;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding: 10px;
+            box-shadow: 0px 3px 15px rgba(84, 84, 84, 0.1);
+            border: none;
+            border-radius: 5px;
+            background-color: transparent;
+            color: white;
+            outline: none;
+            font-family: sans-serif;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        input::placeholder {
+            color: white;
+            font-weight: bold;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            flex: 1;
+            height: 40px;
+            font-size: 1.5em;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: 4px 3px 3px rgba(255, 255, 255, 0.1);
+            color: white;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #eq {
+            background-color: orange;
+        }
+
+        .op {
+            color: aqua;
+        }
+
+        .history {
+            display: none;
+            width: 100%;
+            color: white;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border-top: 1px solid #717377;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="calculator">
+        <input type="text" name="Text" id="txt" placeholder="0">
+
+        <div class="button-row">
+            <button class="op">AC</button>
+            <button class="op">DEL</button>
+            <button class="op">%</button>
+            <button class="op">/</button>
+        </div>
+
+        <div class="button-row">
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button class="op">*</button>
+        </div>
+
+        <div class="button-row">
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button class="op">-</button>
+        </div>
+
+        <div class="button-row">
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button class="op">+</button>
+        </div>
+
+        <div class="button-row">
+            <button id="toggle-history">His</button>
+            <button>0</button>
+            <button>.</button>
+            <button id="eq">=</button>
+        </div>
+    </div>
+
+    <div class="history" id="history"></div>
+
+    <script>
+        let input = document.getElementById('txt');
+        let btn = document.querySelectorAll('button');
+        let historyDiv = document.getElementById('history');
+        let calculatorDiv = document.getElementById('calculator');
+        let toggleHistoryBtn = document.getElementById('toggle-history');
+
+        let string = "";
+        let history = [];
+
+        // Validation to prevent keyboard input
+        input.addEventListener('keydown', (e) => {
+            e.preventDefault();
+        });
+
+        // Array to hold button elements
+        let arr = Array.from(btn);
+
+        arr.forEach(button => {
+            button.addEventListener('click', (e) => {
+                if (e.target.innerHTML == "=") {
+                    if (string != "") {
+                        try {
+                            let result = eval(string);
+                            history.push(`${string} = ${result}`);
+                            updateHistory();
+                            string = result;
+                            input.value = string;
+                        } catch {
+                            input.value = "Error";
+                            string = "";
+                        }
+                    } else {
+                        input.value = "0";
+                    }
+                } else if (e.target.innerHTML == "AC") {
+                    string = "";
+                    input.value = string;
+                } else if (e.target.innerHTML == "DEL") {
+                    string = string.substring(0, string.length - 1);
+                    input.value = string;
+                } else if (e.target.id !== "toggle-history") {
+                    string += e.target.innerHTML;
+                    input.value = string;
+                }
+            })
+        });
+
+        toggleHistoryBtn.addEventListener('click', () => {
+            if (historyDiv.style.display === "none") {
+                historyDiv.style.display = "block";
+                calculatorDiv.style.display = "none";
+                toggleHistoryBtn.innerHTML = "Back to Calculator";
+            }
+            else {
+                historyDiv.style.display = "none";
+                calculatorDiv.style.display = "flex";
+                toggleHistoryBtn.innerHTML = "History";
+            }
+        });
+
+        function updateHistory() {
+            historyDiv.innerHTML = "";
+            history.forEach(item => {
+                let historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.textContent = item;
+                historyDiv.appendChild(historyItem);
+            });
+        }
+    </script>
+</body>
+
+</html>
